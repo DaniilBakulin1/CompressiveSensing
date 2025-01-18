@@ -1,0 +1,67 @@
+# Byte-compiled файлы
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Логи, временные файлы и дампы
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.~*
+
+# Папки окружений
+venv/
+.env/
+*.env
+
+# Конфигурации IDE и редакторов
+.vscode/
+.idea/
+*.iml
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Файлы тестирования
+.tox/
+.pytest_cache/
+.coverage
+*.cover
+*.cov
+.hypothesis/
+
+# Документы и бинарные артефакты
+build/
+dist/
+*.egg-info/
+*.wheel
+
+# Скомпилированные файлы Cython
+*.so
+
+# Пакеты и кэш pip
+pip-wheel-metadata/
+*.egg
+.eggs/
+__pypackages__/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# Bandit (анализатор безопасности)
+.bandit/
+
+# Black (форматирование кода)
+.cache/
+
+# Тестовые артефакты
+tests/__pycache__/
+tests/.pytest_cache/
+tests/outputs/
