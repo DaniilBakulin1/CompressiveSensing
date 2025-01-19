@@ -1,10 +1,10 @@
-from .compress import compress_signal, match_pursuit, sparse_reconstruction
+from .compress import compress, match_pursuit, orthogonal_match_pursuit
 from .utils import generate_basic_signal, generate_measurement_matrix
 
 __all__ = [
-    "compress_signal",
+    "compress",
     "match_pursuit",
-    "sparse_reconstruction",
+    "orthogonal_match_pursuit",
     "generate_basic_signal",
     "generate_measurement_matrix",
 ]

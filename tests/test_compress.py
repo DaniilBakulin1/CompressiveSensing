@@ -1,24 +1,12 @@
 def test_compress_signal():
     import numpy as np
-    from csmp import compress_signal, generate_measurement_matrix
+    from csmp import compress
 
     signal = np.random.randn(100)
-    matrix = generate_measurement_matrix(100, 50)
-    compressed = compress_signal(signal, matrix)
+    compressed, matrix = compress(signal, 50)
 
     assert compressed.shape == (50,), "Сжатый сигнал имеет неправильный размер"
     assert np.allclose(compressed, matrix.T @ signal), "Сжатый сигнал должен быть результатом произведения матрицы на сигнал"
-
-
-def test_sparse_reconstruction():
-    import numpy as np
-    from csmp import sparse_reconstruction
-
-    dictionary = np.eye(5)  # Ортонормированный словарь
-    coefficients = np.array([1, 0, 0, 2, 0])
-    reconstructed = sparse_reconstruction(coefficients, dictionary)
-
-    assert np.allclose(reconstructed, np.array([1, 0, 0, 2, 0])), "Восстановленный сигнал неверный"
 
 
 def test_match_pursuit():
@@ -29,7 +17,7 @@ def test_match_pursuit():
     signal = np.array([1, 0, 0, 2, 0])
     compressed = dictionary.T @ signal
 
-    coefficients, _ = match_pursuit(compressed, dictionary, threshold=0.01, epsilon=0.1)
+    coefficients = match_pursuit(compressed, dictionary, threshold=0.01)
     reconstructed = dictionary @ coefficients
 
     # Проверка восстановления
