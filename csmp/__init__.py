@@ -8,7 +8,7 @@ __all__ = [
     "generate_basic_signal",
     "generate_measurement_matrix",
 ]
-__version__ = "0.1.0"
+__version__ = "0.1.0-alpha2"
 __author__ = "xephosbot"
 __email__ = "xephosbot@gmail.com"
 __description__ = "Library for compressive sensing matching pursuit"
