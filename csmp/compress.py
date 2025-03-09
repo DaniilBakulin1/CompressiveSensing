@@ -1,46 +1,33 @@
 import numpy as np
 
-from .utils import generate_measurement_matrix
 
-
-def compress(data, M, epsilon=None):
+def _compress(data: np.ndarray, matrix: np.ndarray) -> np.ndarray:
     """
     Сжатие сигнала с помощью измерительной матрицы.
 
-    Args:
-        data (np.ndarray): Исходный сигнал.
-        M (int): Количество измерений (M < N).
-        epsilon (float, optional): Пороговое значение для зануления элементов. Если None, не используется.
+    :param data: Исходный сигнал.
+    :param matrix: Матрица измерений.
 
-    Returns:
-        np.ndarray: Сжатый сигнал,
-        np.ndarray: Матрица измерений.
+    :return: Сжатый сигнал.
     """
-    # Применение порога epsilon для разреживания данных
-    if epsilon is not None:
-        data = data.copy()
-        data[np.abs(data) < epsilon] = 0
-
-    measurement_matrix = generate_measurement_matrix(len(data), M)
-
-    return measurement_matrix @ data, measurement_matrix
+    return matrix @ data
 
 
-def match_pursuit(data, matrix, threshold=0.01, max_iterations=1000):
+def _match_pursuit(
+    data: np.ndarray,
+    matrix: np.ndarray,
+    threshold: float = 0.01,
+    max_iterations: int = 1000
+) -> np.ndarray:
     """
     Реализация алгоритма Matching Pursuit для восстановления сигнала.
 
-    Args:
-        data (np.ndarray): Сжатый сигнал.
-        matrix (np.ndarray): Матрица измерений.
-        threshold (float): Порог ошибки для остановки.
-        max_iterations (int): Максимальное количество итераций.
-
-    Returns:
-        np.ndarray: Коэффициенты разложения сигнала.
+    :param data: Сжатый сигнал.
+    :param matrix: Матрица измерений.
+    :param threshold: Порог ошибки для остановки.
+    :param max_iterations: Максимальное количество итераций.
+    :return: Коэффициенты разложения сигнала.
     """
-    if not isinstance(data, np.ndarray) or not isinstance(matrix, np.ndarray):
-        raise TypeError("Ожидались входные данные типа numpy.ndarray")
     if data.ndim != 1:
         raise ValueError("data должен быть одномерным массивом")
     if matrix.shape[0] != data.shape[0]:
@@ -68,21 +55,21 @@ def match_pursuit(data, matrix, threshold=0.01, max_iterations=1000):
     return recovered_signal
 
 
-def orthogonal_match_pursuit(data, matrix, threshold=0.01, max_iterations=1000):
+def _orthogonal_match_pursuit(
+    data: np.ndarray,
+    matrix: np.ndarray,
+    threshold: float = 0.01,
+    max_iterations: int = 1000
+) -> np.ndarray:
     """
     Реализация алгоритма Orthogonal Matching Pursuit для восстановления сигнала.
 
-    Args:
-        data (np.ndarray): Сжатый сигнал.
-        matrix (np.ndarray): Матрица измерений.
-        threshold (float): Порог ошибки для остановки.
-        max_iterations (int): Максимальное количество итераций.
-
-    Returns:
-        np.ndarray: Коэффициенты разложения сигнала.
+    :param data: Сжатый сигнал.
+    :param matrix: Матрица измерений.
+    :param threshold: Порог ошибки для остановки.
+    :param max_iterations: Максимальное количество итераций.
+    :return: Коэффициенты разложения сигнала.
     """
-    if not isinstance(data, np.ndarray) or not isinstance(matrix, np.ndarray):
-        raise TypeError("Ожидались входные данные типа numpy.ndarray")
     if data.ndim != 1:
         raise ValueError("data должен быть одномерным массивом")
     if matrix.shape[0] != data.shape[0]:

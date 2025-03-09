@@ -1,13 +1,17 @@
-from .compress import compress, match_pursuit, orthogonal_match_pursuit
-from .utils import generate_basic_signal, generate_measurement_matrix
+from .compress import _compress, _match_pursuit, _orthogonal_match_pursuit
+from .compressor import Compressor
+from .matrix import _measurement_matrix
+from .utils import basic_signal
 
 __all__ = [
-    "compress",
-    "match_pursuit",
-    "orthogonal_match_pursuit",
-    "generate_basic_signal",
-    "generate_measurement_matrix",
+    "Compressor",
+    "_compress",
+    "_match_pursuit",
+    "_orthogonal_match_pursuit",
+    "basic_signal",
+    "_measurement_matrix",
 ]
+
 __version__ = "0.1.0-alpha2"
 __author__ = "xephosbot"
 __email__ = "xephosbot@gmail.com"

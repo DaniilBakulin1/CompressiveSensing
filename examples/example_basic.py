@@ -1,14 +1,16 @@
-import csmp.compress
+import csmp
+from csmp.compressor import Compressor
 
 
 def main():
-    signal = csmp.generate_basic_signal(10, 4)
+    signal = csmp.basic_signal(1000, 400)
     print(signal)
 
-    compressed, matrix = csmp.compress(signal, 5)
+    compressor = Compressor()
+    compressed = compressor.compress(signal, 500)
     print(compressed)
 
-    recovered_signal = csmp.orthogonal_match_pursuit(compressed, matrix)
+    recovered_signal = compressor.decompress(compressed)
     print(recovered_signal)
 
 
