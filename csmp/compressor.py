@@ -1,7 +1,6 @@
-from typing import Callable, Optional, TypeVar
-
 import numpy as np
 
+from typing import Callable, Optional, TypeVar
 from csmp.core.compress import compressive_sensing
 from csmp.core.decompress import match_pursuit
 from csmp.core.decompress import orthogonal_match_pursuit
@@ -79,6 +78,17 @@ class Compressor:
             self,
             func: Callable[[np.ndarray, np.ndarray], T],
     ) -> T:
+        """
+        Общая функция для вывода метрик
+        :param func:
+        :return:
+        """
+        if self._data is None:
+            raise RuntimeError("Compressor.metric called before compress")
+
+        if self._recovered_data is None:
+            raise RuntimeError("Compressor.metric called before decompress")
+
         return func(self._data, self._recovered_data)
 
     @property

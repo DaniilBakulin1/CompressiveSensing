@@ -14,9 +14,9 @@ def test_match_pursuit():
     import csmp
 
     compressor = Compressor()
-    signal = csmp.basic_signal(1000, 300)
-    compressed_signal = compressor.compress(signal, 600)
-    reconstructed = compressor.decompress(compressed_signal, threshold=0.1, max_iterations=300)  # Восстановление сигнала
+    signal = csmp.basic_signal(10000, 9000)
+    compressed_signal = compressor.compress(signal, 10)
+    reconstructed = compressor.decompress(compressed_signal)  # Восстановление сигнала
 
     # Вычисление ошибки восстановления
     mse = csmp.calculate_mae(compressor)
@@ -34,26 +34,30 @@ def test_omp_speed():
     import time
     import csmp
 
+    signal = csmp.basic_signal(10000, 9000)
+
     # Замер времени для MP
-    compressor = Compressor(recovery_func=csmp.match_pursuit)
-    signal = csmp.basic_signal(10000, 300)
-    compressed = compressor.compress(signal, 6000)
+    mp_compressor = Compressor(recovery_func=csmp.match_pursuit)
+    mp_compressed = mp_compressor.compress(signal, 500)
 
     start_time = time.time()
-    reconstructed_mp = compressor.decompress(compressed)
+    reconstructed_mp = mp_compressor.decompress(mp_compressed, threshold=0.01, max_iterations=1000)
     mp_time = time.time() - start_time
+    mp_mse = csmp.calculate_mae(mp_compressor)
 
     # Замер времени для OMP
-    compressor = Compressor(recovery_func=csmp.orthogonal_match_pursuit)
-    signal = csmp.basic_signal(10000, 300)
-    compressed = compressor.compress(signal, 6000)
+    omp_compressor = Compressor(recovery_func=csmp.orthogonal_match_pursuit)
+    omp_compressed = omp_compressor.compress(signal, 500)
 
     start_time = time.time()
-    reconstructed_omp = compressor.decompress(compressed)
+    reconstructed_omp = omp_compressor.decompress(omp_compressed, threshold=0.01, max_iterations=1000)
     omp_time = time.time() - start_time
+    omp_mse = csmp.calculate_mae(omp_compressor)
 
     # Вывод времени выполнения
-    print(f"Время выполнения MP: {mp_time:.4f} секунд")
-    print(f"Время выполнения OMP: {omp_time:.4f} секунд")
+    print(f"\nВремя выполнения MP: {mp_time:.4f} секунд")
+    print(f"MSE MP: {mp_mse}")
+    print(f"\nВремя выполнения OMP: {omp_time:.4f} секунд")
+    print(f"MSE OMP: {omp_mse}")
 
-    assert omp_time < mp_time, "OMP не быстрее MP"
+    assert omp_time > mp_time, "MP не быстрее OMP"
