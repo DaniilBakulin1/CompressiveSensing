@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def _measurement_matrix(n: int, m: int) -> np.ndarray:
+def measurement_matrix(n: int, m: int) -> np.ndarray:
     """
     Генерация измерительной матрицы с размерами M x N.
 

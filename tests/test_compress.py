@@ -12,7 +12,6 @@ def test_compress_signal():
 
 def test_match_pursuit():
     import csmp
-    import numpy as np
 
     compressor = Compressor()
     signal = csmp.basic_signal(1000, 300)
@@ -20,12 +19,15 @@ def test_match_pursuit():
     reconstructed = compressor.decompress(compressed_signal, threshold=0.1, max_iterations=300)  # Восстановление сигнала
 
     # Вычисление ошибки восстановления
-    error = np.abs(signal - reconstructed)
-    mean_error = np.mean(error)
+    mse = csmp.calculate_mae(compressor)
+    mae = csmp.calculate_mae(compressor)
+    snr = csmp.calculate_snr(compressor)
 
-    print(f"Средняя ошибка восстановления: {mean_error}")
+    print(f"\nMSE: {mse}")
+    print(f"MAE: {mae}")
+    print(f"SNR: {snr}")
 
-    assert mean_error < 0.1, f"Средняя ошибка восстановления {mean_error} превышает допустимый порог 0.1"
+    assert mse < 0.1, f"Средняя ошибка восстановления {mse} превышает допустимый порог 0.1"
 
 
 def test_omp_speed():
@@ -33,7 +35,7 @@ def test_omp_speed():
     import csmp
 
     # Замер времени для MP
-    compressor = Compressor(recovery_func=csmp._match_pursuit)
+    compressor = Compressor(recovery_func=csmp.match_pursuit)
     signal = csmp.basic_signal(10000, 300)
     compressed = compressor.compress(signal, 6000)
 
@@ -42,7 +44,7 @@ def test_omp_speed():
     mp_time = time.time() - start_time
 
     # Замер времени для OMP
-    compressor = Compressor(recovery_func=csmp._orthogonal_match_pursuit)
+    compressor = Compressor(recovery_func=csmp.orthogonal_match_pursuit)
     signal = csmp.basic_signal(10000, 300)
     compressed = compressor.compress(signal, 6000)
 

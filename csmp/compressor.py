@@ -1,15 +1,17 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 import numpy as np
 
-from csmp import _compress
-from csmp import _measurement_matrix
-from csmp import _match_pursuit
-from csmp import _orthogonal_match_pursuit
+from csmp.core.compress import compressive_sensing
+from csmp.core.decompress import match_pursuit
+from csmp.core.decompress import orthogonal_match_pursuit
+from csmp.core.matrix import measurement_matrix
 
 CompressFunc = Callable[[np.ndarray, np.ndarray], np.ndarray]
 MatrixFunc = Callable[[int, int], np.ndarray]
 RecoveryFunc = Callable[[np.ndarray, np.ndarray, float, int], np.ndarray]
+
+T = TypeVar('T')
 
 
 class Compressor:
@@ -19,10 +21,12 @@ class Compressor:
             matrix_func: Optional[MatrixFunc] = None,
             recovery_func: Optional[RecoveryFunc] = None,
     ):
-        self.compress_func = compress_func or _compress
-        self.matrix_func = matrix_func or _measurement_matrix
-        self.recovery_func = recovery_func or _orthogonal_match_pursuit
+        self.compress_func = compress_func or compressive_sensing
+        self.matrix_func = matrix_func or measurement_matrix
+        self.recovery_func = recovery_func or orthogonal_match_pursuit
         self._matrix: Optional[np.ndarray] = None
+        self._data: Optional[np.ndarray] = None
+        self._recovered_data: Optional[np.ndarray] = None
 
     def compress(
             self,
@@ -38,16 +42,17 @@ class Compressor:
         :param epsilon: Пороговое значение для зануления элементов. Если None, не используется.
         :return: Сжатый сигнал.
         """
+        self._data = data.copy()
+
         # Применение порога epsilon для разреживания данных
         if epsilon is not None:
             if epsilon < 0:
                 raise ValueError("epsilon cannot be negative")
 
-            data = data.copy()
-            data[np.abs(data) < epsilon] = 0
+            self._data[np.abs(self._data) < epsilon] = 0
 
-        self._matrix = self.matrix_func(len(data), compress)
-        compressed_data = self.compress_func(data, self._matrix)
+        self._matrix = self.matrix_func(len(self._data), compress)
+        compressed_data = self.compress_func(self._data, self._matrix)
         return compressed_data
 
     def decompress(
@@ -67,8 +72,14 @@ class Compressor:
         if self._matrix is None:
             raise RuntimeError("Compressor.decompress called before compress")
 
-        recovered_data = self.recovery_func(compressed_data, self._matrix, threshold, max_iterations)
-        return recovered_data
+        self._recovered_data = self.recovery_func(compressed_data, self._matrix, threshold, max_iterations)
+        return self._recovered_data
+
+    def metric(
+            self,
+            func: Callable[[np.ndarray, np.ndarray], T],
+    ) -> T:
+        return func(self._data, self._recovered_data)
 
     @property
     def matrix(self) -> np.ndarray:

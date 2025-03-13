@@ -1,19 +1,7 @@
 import numpy as np
 
 
-def _compress(data: np.ndarray, matrix: np.ndarray) -> np.ndarray:
-    """
-    Сжатие сигнала с помощью измерительной матрицы.
-
-    :param data: Исходный сигнал.
-    :param matrix: Матрица измерений.
-
-    :return: Сжатый сигнал.
-    """
-    return matrix @ data
-
-
-def _match_pursuit(
+def match_pursuit(
     data: np.ndarray,
     matrix: np.ndarray,
     threshold: float = 0.01,
@@ -55,7 +43,7 @@ def _match_pursuit(
     return recovered_signal
 
 
-def _orthogonal_match_pursuit(
+def orthogonal_match_pursuit(
     data: np.ndarray,
     matrix: np.ndarray,
     threshold: float = 0.01,

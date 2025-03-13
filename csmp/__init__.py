@@ -1,15 +1,20 @@
-from .compress import _compress, _match_pursuit, _orthogonal_match_pursuit
-from .compressor import Compressor
-from .matrix import _measurement_matrix
-from .utils import basic_signal
+from csmp.compressor import Compressor
+from csmp.utils import basic_signal
+from csmp.core.compress import compressive_sensing
+from csmp.core.decompress import match_pursuit, orthogonal_match_pursuit
+from csmp.core.matrix import measurement_matrix
+from csmp.core.metrics import calculate_mse, calculate_mae, calculate_snr
 
 __all__ = [
     "Compressor",
-    "_compress",
-    "_match_pursuit",
-    "_orthogonal_match_pursuit",
     "basic_signal",
-    "_measurement_matrix",
+    "compressive_sensing",
+    "match_pursuit",
+    "orthogonal_match_pursuit",
+    "measurement_matrix",
+    "calculate_mse",
+    "calculate_mae",
+    "calculate_snr",
 ]
 
 __version__ = "0.1.0-alpha2"
