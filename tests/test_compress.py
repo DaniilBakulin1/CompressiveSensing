@@ -34,7 +34,7 @@ def test_omp_speed():
     import time
     import csmp
 
-    signal = csmp.basic_signal(10000, 9000)
+    signal = csmp.basic_signal(1000, 900)
 
     # Замер времени для MP
     mp_compressor = Compressor(recovery_func=csmp.match_pursuit)
@@ -43,7 +43,7 @@ def test_omp_speed():
     start_time = time.time()
     reconstructed_mp = mp_compressor.decompress(mp_compressed, threshold=0.01, max_iterations=1000)
     mp_time = time.time() - start_time
-    mp_mse = csmp.calculate_mae(mp_compressor)
+    mp_mse = csmp.calculate_mse(mp_compressor)
 
     # Замер времени для OMP
     omp_compressor = Compressor(recovery_func=csmp.orthogonal_match_pursuit)
@@ -52,12 +52,23 @@ def test_omp_speed():
     start_time = time.time()
     reconstructed_omp = omp_compressor.decompress(omp_compressed, threshold=0.01, max_iterations=1000)
     omp_time = time.time() - start_time
-    omp_mse = csmp.calculate_mae(omp_compressor)
+    omp_mse = csmp.calculate_mse(omp_compressor)
+
+    # Замер времени для ROMP
+    romp_compressor = Compressor(recovery_func=csmp.regularized_orthogonal_match_pursuit)
+    romp_compressed = romp_compressor.compress(signal, 500)
+
+    start_time = time.time()
+    reconstructed_romp = romp_compressor.decompress(romp_compressed, threshold=0.01, max_iterations=1000)
+    romp_time = time.time() - start_time
+    romp_mse = csmp.calculate_mse(romp_compressor)
 
     # Вывод времени выполнения
     print(f"\nВремя выполнения MP: {mp_time:.4f} секунд")
     print(f"MSE MP: {mp_mse}")
     print(f"\nВремя выполнения OMP: {omp_time:.4f} секунд")
     print(f"MSE OMP: {omp_mse}")
+    print(f"\nВремя выполнения ROMP: {romp_time:.4f} секунд")
+    print(f"MSE ROMP: {romp_mse}")
 
     assert omp_time > mp_time, "MP не быстрее OMP"
