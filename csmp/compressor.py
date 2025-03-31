@@ -42,16 +42,17 @@ class Compressor:
         :return: Сжатый сигнал.
         """
         self._data = data.copy()
+        _data = self._data.copy()
 
         # Применение порога epsilon для разреживания данных
         if epsilon is not None:
             if epsilon < 0:
                 raise ValueError("epsilon cannot be negative")
 
-            self._data[np.abs(self._data) < epsilon] = 0
+            _data[np.abs(_data) < epsilon] = 0
 
-        self._matrix = self.matrix_func(len(self._data), compress)
-        compressed_data = self.compress_func(self._data, self._matrix)
+        self._matrix = self.matrix_func(len(_data), compress)
+        compressed_data = self.compress_func(_data, self._matrix)
         return compressed_data
 
     def decompress(
