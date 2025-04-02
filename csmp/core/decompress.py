@@ -94,6 +94,84 @@ def orthogonal_match_pursuit(
     return recovered_signal
 
 
+def regularized_orthogonal_match_pursuit_2(
+        data: np.ndarray,
+        matrix: np.ndarray,
+        threshold: float = 0.01,
+        max_iterations: int = 1000,
+) -> np.ndarray:
+    """
+    Реализация Regularized Orthogonal Matching Pursuit (ROMP) для восстановления разреженного сигнала.
+
+    Параметры:
+        data: Вектор измерений (m x 1)
+        matrix: Матрица измерений (m x n)
+        threshold: Порог для остановки алгоритма (по норме остатка)
+        max_iterations: Максимальное число итераций
+
+    Возвращает:
+        Восстановленный разреженный сигнал (n x 1)
+    """
+    m, n = matrix.shape
+    s = n  # В оригинальном ROMP sparsity level можно оценить или задать
+
+    # Инициализация
+    residual = data.copy()
+    index_set = []
+    solution = np.zeros(n)
+
+    for _ in range(max_iterations):
+        # 1. Вычисление корреляционного вектора
+        correlations = matrix.T @ residual
+
+        # 2. Выбор s наибольших компонент (или всех ненулевых, если их меньше)
+        magnitudes = np.abs(correlations)
+        nonzero_indices = np.where(magnitudes > 0)[0]
+
+        if len(nonzero_indices) == 0:
+            break
+
+        # Выбираем s наибольших или все ненулевые
+        s_selected = min(s, len(nonzero_indices))
+        largest_indices = np.argpartition(magnitudes, -s_selected)[-s_selected:]
+
+        # 3. Регуляризация: выбор подмножества с сопоставимыми значениями
+        selected_magnitudes = magnitudes[largest_indices]
+        max_magnitude = np.max(selected_magnitudes)
+
+        # Находим индексы, где значения не менее половины максимального
+        J0 = largest_indices[selected_magnitudes >= 0.5 * max_magnitude]
+
+        # Если J0 пусто, берем индекс с максимальным значением
+        if len(J0) == 0:
+            J0 = [np.argmax(magnitudes)]
+
+        # 4. Добавляем новые индексы в множество (исключая уже выбранные)
+        new_indices = [idx for idx in J0 if idx not in index_set]
+        if not new_indices:
+            break
+
+        index_set.extend(new_indices)
+        index_set = list(set(index_set))  # Удаляем дубликаты
+
+        # 5. Обновляем решение методом наименьших квадратов
+        submatrix = matrix[:, index_set]
+        solution_ls = np.linalg.lstsq(submatrix, data, rcond=None)[0]
+
+        # Обновляем полное решение
+        solution = np.zeros(n)
+        solution[index_set] = solution_ls
+
+        # Обновляем остаток
+        residual = data - matrix @ solution
+
+        # Проверка условия остановки
+        if np.linalg.norm(residual) < threshold:
+            break
+
+    return solution
+
+
 def regularized_orthogonal_match_pursuit(
         data: np.ndarray,
         matrix: np.ndarray,
