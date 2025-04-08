@@ -30,7 +30,7 @@ def test_match_pursuit():
     assert mse < 0.1, f"Средняя ошибка восстановления {mse} превышает допустимый порог 0.1"
 
 
-def test_omp_speed():
+def test_decompress_speed():
     import time
     import csmp
 

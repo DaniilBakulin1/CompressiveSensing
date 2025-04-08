@@ -135,7 +135,6 @@ def regularized_orthogonal_match_pursuit(
         if len(J0) == 0:
             J0 = [np.argmax(magnitudes)]
 
-        # 4. Добавляем новые индексы в множество (исключая уже выбранные)
         new_indices = [idx for idx in J0 if idx not in index_set]
         if not new_indices:
             break
