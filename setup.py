@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="csmp",
-    version="0.1.0-alpha2",
+    version="0.1.0-alpha3",
     author="xephosbot",
     description="Library for compressive sensing matching pursuit",
     packages=find_packages(),
