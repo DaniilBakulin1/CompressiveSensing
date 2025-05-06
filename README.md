@@ -1,6 +1,6 @@
 # CSMP — Compressive Sensing Matching Pursuit
 
-Библиотека **CSMP** предоставляет инструменты для сжатия и восстановления сигналов с использованием методов разреженного представления (Compressive Sensing). Поддерживаются алгоритмы Matching Pursuit (MP), Orthogonal Matching Pursuit (OMP).
+Библиотека **CSMP** предоставляет инструменты для сжатия и восстановления сигналов с использованием методов разреженного представления (Compressive Sensing).
 
 ---
 
