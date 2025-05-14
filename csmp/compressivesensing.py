@@ -111,7 +111,7 @@ class CompressiveSensing:
         # Среднеквадратичная ошибка (MSE)
         mse = np.mean((original_signal - reconstructed_signal) ** 2)
 
-        # Среднеквадратичная ошибка (MAE)
+        # Средняя абсолютная ошибка (MAE)
         mae = np.mean(np.abs(original_signal - reconstructed_signal))
 
         # Отношение сигнал/шум (SNR)
