@@ -45,9 +45,9 @@ class CompressiveSensing:
         if sampling_method == 'random_rows':
             self.sampling_matrix, self.sampling_indices = SamplingMatrix.random_rows(M, N)
         elif sampling_method == 'gaussian':
-            self.sampling_matrix, _ = SamplingMatrix.gaussian(M, N)
+            self.sampling_matrix = SamplingMatrix.gaussian(M, N)
         elif sampling_method == 'bernoulli':
-            self.sampling_matrix, _ = SamplingMatrix.bernoulli(M, N)
+            self.sampling_matrix = SamplingMatrix.bernoulli(M, N)
         else:
             raise ValueError(f"Неизвестный метод выбора отсчетов: {sampling_method}")
 

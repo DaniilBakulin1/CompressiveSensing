@@ -209,7 +209,7 @@ class MP(ReconstructionAlgorithm):
         Восстановление разреженного представления сигнала методом MP.
         
         Args:
-            sensing_matrix: Матрица измерений (Phi * Psi).
+            sensing_matrix: Матрица измерений.
             compressed_signal: Сжатый сигнал y.
             max_iter: Максимальное количество итераций.
             epsilon: Порог ошибки для остановки алгоритма.

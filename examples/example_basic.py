@@ -1,26 +1,43 @@
 import csmp
-from csmp import Compressor
+from csmp import CompressiveSensing, DCTBasis, MP, DFTBasis
 import matplotlib.pyplot as plt
 
 def main():
-    signal = csmp.basic_signal(100, 60)
+    original_signal = csmp.generate_test_signal(
+        signal_type='sinusoid',
+        length=256,
+        freq1=0.05,
+        freq2=0.15,
+        freq3=0.3
+    )
 
-    compressor = Compressor()
-    compressed = compressor.compress(signal, 90)
-    recovered_signal = compressor.decompress(compressed)
+    # Создание экземпляра CS с ДКП базисом
+    cs = CompressiveSensing(basis=DCTBasis())
 
-    mse = csmp.calculate_mse(compressor)
-    print("MSE:", mse)
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.7,  # сжатие до 30% от исходной длины
+        sampling_method='random_rows'
+    )
 
-    # Построение графиков
-    plt.figure(figsize=(10, 6))
-    plt.plot(signal, label='Исходный сигнал', color='blue')
-    plt.plot(recovered_signal, label='Восстановленный сигнал', color='red', linestyle='dashed')
-    plt.title('Исходный и восстановленный сигналы')
-    plt.xlabel('Время')
-    plt.ylabel('Амплитуда')
-    plt.legend()
-    plt.grid(True)
+    # Восстановление сигнала с помощью MP
+    mp_algorithm = MP()
+    reconstructed_signal = cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=mp_algorithm,
+        max_iter=1000,
+        epsilon=1e-6
+    )
+
+    # Оценка качества восстановления
+    metrics = cs.evaluate(original_signal, reconstructed_signal)
+    print(metrics)
+
+    plt.figure(figsize=(18, 5))
+    plt.plot(original_signal)
+    plt.plot(reconstructed_signal)
     plt.show()
 
 if __name__ == '__main__':
