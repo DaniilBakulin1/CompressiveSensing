@@ -18,7 +18,7 @@ class ReconstructionAlgorithm(ABC):
         Восстановление разреженного представления сигнала.
 
         Args:
-            sensing_matrix: Матрица измерений (Phi * Psi).
+            sensing_matrix: Матрица измерений.
             compressed_signal: Сжатый сигнал y.
             **kwargs: Дополнительные параметры.
 
@@ -36,14 +36,14 @@ class MP(ReconstructionAlgorithm):
     def reconstruct(self,
                     sensing_matrix: np.ndarray,
                     compressed_signal: np.ndarray,
-                    max_iter: int = 1000,
+                    max_iter: int = 100,
                     epsilon: float = 1e-6,
                     sparsity: Optional[int] = None) -> np.ndarray:
         """
         Восстановление разреженного представления сигнала методом MP.
 
         Args:
-            sensing_matrix: Матрица измерений (Phi * Psi).
+            sensing_matrix: Матрица измерений.
             compressed_signal: Сжатый сигнал y.
             max_iter: Максимальное количество итераций.
             epsilon: Порог ошибки для остановки алгоритма.
@@ -54,14 +54,19 @@ class MP(ReconstructionAlgorithm):
         """
         M, N = sensing_matrix.shape
 
-        # Инициализация разреженного представления и остатка
-        s = np.zeros(N)
-        r = np.copy(compressed_signal)
+        # Проверяем, содержит ли матрица измерений комплексные числа
+        is_complex = np.iscomplexobj(sensing_matrix)
+
+        # Инициализация разреженного представления
+        s = np.zeros(N, dtype=complex if is_complex else float)
+
+        # Инициализация остатка с правильным типом данных
+        r = np.copy(compressed_signal).astype(complex if is_complex else float)
 
         iterations = 0
         while iterations < max_iter:
             # Вычисление корреляции остатка со столбцами матрицы измерений
-            h = np.dot(sensing_matrix.T, r)
+            h = np.dot(sensing_matrix.conj().T if is_complex else sensing_matrix.T, r)
 
             # Нахождение индекса с максимальной корреляцией
             k = np.argmax(np.abs(h))
