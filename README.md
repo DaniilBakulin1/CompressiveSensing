@@ -4,7 +4,7 @@
 
 CSMP Framework - это библиотека для работы с методом Compressive Sensing (CS) для сжатия и восстановления 1D сигналов. Название CSMP расшифровывается как **C**ompressive **S**ensing with **M**atching **P**ursuit.
 
-Метод Compressive Sensing позволяет восстанавливать сигнал из меньшего числа отсчётов по сравнению с классическими методами дискретизации. Это возможно благодаря использованию разреженного представления сигнала в определенном базисе и специальных алгоритмов восстановления, таких как Matching Pursuit (MP).
+Метод Compressive Sensing позволяет восстанавливать сигнал из меньшего числа отсчётов по сравнению с классическими методами дискретизации. Это возможно благодаря использованию разреженного представления сигнала в определенном базисе и специальных алгоритмов восстановления, таких как Matching Pursuit (MP), Orthogonal Matching Pursuit (OMP).
 
 ## Основные компоненты
 
@@ -30,7 +30,7 @@ CSMP Framework - это библиотека для работы с методо
 Реализованы следующие алгоритмы восстановления:
 
 - `MP` (Matching Pursuit) - итеративный алгоритм, который находит разреженное представление сигнала
-- `OMP` (Orthogonal Matching Pursuit) - заглушка для будущей реализации
+- `OMP` (Orthogonal Matching Pursuit) - итеративный алгоритм, который находит разреженное представление сигнала
 
 ### Основной класс (CompressiveSensing)
 
@@ -209,12 +209,37 @@ class MP(ReconstructionAlgorithm):
         Восстановление разреженного представления сигнала методом MP.
         
         Args:
-            sensing_matrix: Матрица измерений.
+            sensing_matrix: Матрица базиса.
             compressed_signal: Сжатый сигнал y.
             max_iter: Максимальное количество итераций.
             epsilon: Порог ошибки для остановки алгоритма.
             sparsity: Заданная разреженность K (если None, используется epsilon).
             
+        Returns:
+            Восстановленное разреженное представление сигнала.
+        """
+```
+
+#### Класс `OMP` (Orthogonal Matching Pursuit)
+
+```python
+class MP(ReconstructionAlgorithm):
+    def reconstruct(self, 
+                  sensing_matrix: np.ndarray, 
+                  compressed_signal: np.ndarray, 
+                  max_iter: int = 100,
+                  epsilon: float = 1e-6,
+                  sparsity: Optional[int] = None) -> np.ndarray:
+        """
+        Восстановление разреженного представления сигнала методом OMP.
+
+        Args:
+            sensing_matrix: Матрица базиса.
+            compressed_signal: Сжатый сигнал y.
+            max_iter: Максимальное количество итераций.
+            epsilon: Порог ошибки для остановки алгоритма.
+            sparsity: Заданная разреженность K (если None, используется epsilon).
+
         Returns:
             Восстановленное разреженное представление сигнала.
         """
