@@ -79,7 +79,7 @@ class CompressiveSensing:
         # Получение матрицы базиса
         basis_matrix = self.basis.get_matrix(signal_length)
 
-        # Формирование матрицы измерений A = Phi * Psi
+        # Формирование матрицы выбора отсчетов A = Phi * Psi
         if self.sampling_indices is not None:
             # Если используем выбор случайных строк, берем соответствующие строки из матрицы базиса
             sensing_matrix = basis_matrix[self.sampling_indices, :]
