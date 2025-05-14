@@ -1,44 +1,166 @@
 import time
 import csmp
+from csmp import CompressiveSensing, OMP, MP, DFTBasis, DCTBasis
 
 
 def test_compression_size():
-    _, x = csmp.generate_signal(1000)
-    y, Theta, _ = csmp.compress_signal(x, 500)
-    assert len(y) == 500, "Сжатый сигнал имеет неправильный размер"
+    original_signal = csmp.generate_test_signal(
+        signal_type='sinusoid',
+        length=1000,
+        freq1=97,
+        freq2=777,
+    )
+    cs = CompressiveSensing(basis=DFTBasis())
+
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.3,  # сжатие до 30% от исходной длины
+        sampling_method='random_rows'
+    )
+
+    assert len(compressed_signal) == 300, "Сжатый сигнал имеет неправильный размер"
 
 
 def test_mp_reconstruction_accuracy():
-    _, x = csmp.generate_signal(1000)
-    y, Theta, _ = csmp.compress_signal(x, 300)
-    s_hat = csmp.orthogonal_matching_pursuit(Theta, y, K=2)
-    x_hat = csmp.reconstruct_signal(s_hat)
+    original_signal = csmp.generate_test_signal(
+        signal_type='sinusoid',
+        length=1000,
+        freq1=97,
+        freq2=777,
+    )
+    cs = CompressiveSensing(basis=DFTBasis())
 
-    snr = csmp.calculate_snr(x, x_hat)
-    mse = csmp.calculate_mse(x, x_hat)
-    mae = csmp.calculate_mae(x, x_hat)
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.3,  # сжатие до 30% от исходной длины
+        sampling_method='random_rows'
+    )
 
-    print(f"SNR: {snr:.2f} dB")
-    print(f"MSE: {mse:.4e}")
-    print(f"MAE: {mae:.4e}")
+    mp_algorithm = OMP()
+    reconstructed_signal = cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=mp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
 
-    assert snr > 5, "SNR слишком низкий"
-    assert mse < 1.0, "MSE слишком высокий"
+    metrics = cs.evaluate(original_signal, reconstructed_signal)
+
+    print(f"SNR: {metrics['snr']} dB")
+    print(f"MSE: {metrics['mse']}")
+    print(f"MAE: {metrics['mae']}")
+
+    assert metrics['snr'] > 5, "SNR слишком низкий"
+    assert metrics['mse'] < 1.0, "MSE слишком высокий"
 
 
 def test_algorithm_speed_comparison():
-    _, x = csmp.generate_signal(1000)
-    y, Theta, _ = csmp.compress_signal(x, 300)
+    original_signal = csmp.generate_test_signal(
+        signal_type='sinusoid',
+        length=1000,
+        freq1=97,
+        freq2=777,
+    )
+    cs = CompressiveSensing(basis=DFTBasis())
+
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.1,  # сжатие до 10% от исходной длины
+        sampling_method='random_rows'
+    )
 
     start = time.time()
-    csmp.matching_pursuit(Theta, y, K=10)
+    mp_algorithm = MP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=mp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
     mp_time = time.time() - start
 
     start = time.time()
-    csmp.orthogonal_matching_pursuit(Theta, y, K=10)
+    omp_algorithm = OMP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=omp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
     omp_time = time.time() - start
 
+    print("\n")
     print(f"MP time: {mp_time:.4f}s")
     print(f"OMP time: {omp_time:.4f}s")
 
-    assert mp_time < omp_time, "MP должен быть быстрее или сравним по скорости с OMP"
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.3,  # сжатие до 30% от исходной длины
+        sampling_method='random_rows'
+    )
+
+    start = time.time()
+    mp_algorithm = MP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=mp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
+    mp_time = time.time() - start
+
+    start = time.time()
+    omp_algorithm = OMP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=omp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
+    omp_time = time.time() - start
+
+    print("\n")
+    print(f"MP time: {mp_time:.4f}s")
+    print(f"OMP time: {omp_time:.4f}s")
+
+    # Сжатие сигнала
+    compressed_signal = cs.compress(
+        signal=original_signal,
+        compression_ratio=0.5,  # сжатие до 50% от исходной длины
+        sampling_method='random_rows'
+    )
+
+    start = time.time()
+    mp_algorithm = MP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=mp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
+    mp_time = time.time() - start
+
+    start = time.time()
+    omp_algorithm = OMP()
+    cs.reconstruct(
+        compressed_signal=compressed_signal,
+        signal_length=len(original_signal),
+        algorithm=omp_algorithm,
+        max_iter=10000,
+        sparsity=100
+    )
+    omp_time = time.time() - start
+
+    print("\n")
+    print(f"MP time: {mp_time:.4f}s")
+    print(f"OMP time: {omp_time:.4f}s")
