@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from scipy.fftpack import dct
+from scipy.fftpack import idct
 
 import numpy as np
 
@@ -69,9 +71,7 @@ class DCTBasis(Basis):
         Returns:
             ДКП коэффициенты.
         """
-        N = len(signal)
-        matrix = self.get_matrix(N)
-        return np.dot(matrix, signal)
+        return dct(signal, type=3, norm='ortho')
 
     def backward(self, coefficients: np.ndarray) -> np.ndarray:
         """
@@ -83,9 +83,7 @@ class DCTBasis(Basis):
         Returns:
             Восстановленный сигнал.
         """
-        N = len(coefficients)
-        matrix = self.get_matrix(N)
-        return np.dot(matrix.T, coefficients)
+        return idct(coefficients, type=3, norm='ortho')
 
     def get_matrix(self, signal_length: int) -> np.ndarray:
         """
@@ -149,7 +147,7 @@ class DFTBasis(Basis):
         Returns:
             Восстановленный сигнал.
         """
-        return np.fft.ifft(coefficients) * np.sqrt(len(coefficients))
+        return np.real(np.fft.ifft(coefficients) * np.sqrt(len(coefficients)))
 
     def get_matrix(self, signal_length: int) -> np.ndarray:
         """

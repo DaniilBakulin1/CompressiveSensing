@@ -17,18 +17,18 @@ def generate_test_signal(
     Returns:
         Сгенерированный сигнал.
     """
-    x = np.arange(length)
+    x = np.linspace(0, 1, length, endpoint=False)
 
     if signal_type == 'sinusoid':
         # Синусоида с несколькими частотами
         freq1 = kwargs.get('freq1', 0.05)
         freq2 = kwargs.get('freq2', 0.15)
-        freq3 = kwargs.get('freq3', 0.30)
+        freq3 = kwargs.get('freq3', None)
 
         signal = (
-                np.sin(2 * np.pi * freq1 * x) +
-                0.5 * np.sin(2 * np.pi * freq2 * x) +
-                0.25 * np.sin(2 * np.pi * freq3 * x)
+                np.cos(2 * np.pi * freq1 * x) +
+                np.cos(2 * np.pi * freq2 * x) +
+                (np.cos(2 * np.pi * freq3 * x) if freq3 is not None else 0)
         )
 
     elif signal_type == 'sparse':
