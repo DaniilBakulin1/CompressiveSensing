@@ -49,7 +49,7 @@ CSMP Framework - это библиотека для работы с методо
 
 ```python
 import numpy as np
-from csmp_framework import CompressiveSensing, DCTBasis, MP
+from csmp import CompressiveSensing, DCTBasis, MP
 
 # Создание экземпляра CS с ДКП базисом
 cs = CompressiveSensing(basis=DCTBasis())
@@ -78,7 +78,7 @@ metrics = cs.evaluate(original_signal, reconstructed_signal)
 ### Генерация тестового сигнала
 
 ```python
-from csmp_framework import generate_test_signal
+from csmp import generate_test_signal
 
 # Синусоидальный сигнал
 sinusoid = generate_test_signal(
@@ -224,7 +224,7 @@ class MP(ReconstructionAlgorithm):
 #### Класс `OMP` (Orthogonal Matching Pursuit)
 
 ```python
-class MP(ReconstructionAlgorithm):
+class OMP(ReconstructionAlgorithm):
     def reconstruct(self, 
                   sensing_matrix: np.ndarray, 
                   compressed_signal: np.ndarray, 
