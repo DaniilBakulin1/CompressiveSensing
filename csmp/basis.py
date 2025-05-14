@@ -102,10 +102,7 @@ class DCTBasis(Basis):
         N = signal_length
         matrix = np.zeros((N, N))
 
-        # Первая строка
         matrix[0, :] = 1 / np.sqrt(N)
-
-        # Остальные строки
         for k in range(1, N):
             for n in range(N):
                 matrix[k, n] = np.sqrt(2 / N) * np.cos(np.pi * k * (2 * n + 1) / (2 * N))
