@@ -18,7 +18,7 @@ class ReconstructionAlgorithm(ABC):
         Восстановление разреженного представления сигнала.
 
         Args:
-            sensing_matrix: Матрица измерений.
+            sensing_matrix: Матрица базиса.
             compressed_signal: Сжатый сигнал y.
             **kwargs: Дополнительные параметры.
 
@@ -43,7 +43,7 @@ class MP(ReconstructionAlgorithm):
         Восстановление разреженного представления сигнала методом MP.
 
         Args:
-            sensing_matrix: Матрица измерений.
+            sensing_matrix: Матрица базиса.
             compressed_signal: Сжатый сигнал y.
             max_iter: Максимальное количество итераций.
             epsilon: Порог ошибки для остановки алгоритма.
@@ -54,7 +54,7 @@ class MP(ReconstructionAlgorithm):
         """
         M, N = sensing_matrix.shape
 
-        # Проверяем, содержит ли матрица измерений комплексные числа
+        # Проверяем, содержит ли матрица базиса комплексные числа
         is_complex = np.iscomplexobj(sensing_matrix)
 
         # Инициализация разреженного представления
@@ -65,7 +65,7 @@ class MP(ReconstructionAlgorithm):
 
         iterations = 0
         while iterations < max_iter:
-            # Вычисление корреляции остатка со столбцами матрицы измерений
+            # Вычисление корреляции остатка со столбцами матрицы базиса
             h = np.dot(sensing_matrix.conj().T if is_complex else sensing_matrix.T, r)
 
             # Нахождение индекса с максимальной корреляцией
@@ -106,7 +106,7 @@ class OMP(ReconstructionAlgorithm):
         Восстановление разреженного представления сигнала методом OMP.
 
         Args:
-            sensing_matrix: Матрица измерений (Phi * Psi).
+            sensing_matrix: Матрица базиса.
             compressed_signal: Сжатый сигнал y.
             max_iter: Максимальное количество итераций.
             epsilon: Порог ошибки для остановки алгоритма.
@@ -117,7 +117,7 @@ class OMP(ReconstructionAlgorithm):
         """
         M, N = sensing_matrix.shape
 
-        # Проверяем, содержит ли матрица измерений комплексные числа
+        # Проверяем, содержит ли матрица базиса комплексные числа
         is_complex = np.iscomplexobj(sensing_matrix)
 
         # Инициализация разреженного представления
@@ -126,12 +126,12 @@ class OMP(ReconstructionAlgorithm):
         # Инициализация остатка с правильным типом данных
         r = np.copy(compressed_signal).astype(complex if is_complex else float)
 
-        # Множество индексов выбранных атомов
+        # Множество индексов
         selected_indices = []
 
         iterations = 0
         while iterations < max_iter:
-            # Вычисление корреляции остатка со столбцами матрицы измерений
+            # Вычисление корреляции остатка со столбцами матрицы базиса
             h = np.dot(sensing_matrix.conj().T if is_complex else sensing_matrix.T, r)
 
             # Нахождение индекса с максимальной корреляцией
@@ -146,12 +146,7 @@ class OMP(ReconstructionAlgorithm):
 
             # Вычисление псевдообратной матрицы и решение МНК
             # y = Φ * s_selected, хотим найти s_selected
-            if is_complex:
-                # Используем Least Squares для комплексных чисел
-                s_selected, _, _, _ = np.linalg.lstsq(selected_columns, compressed_signal, rcond=None)
-            else:
-                # Для вещественных чисел
-                s_selected, _, _, _ = np.linalg.lstsq(selected_columns, compressed_signal, rcond=None)
+            s_selected, _, _, _ = np.linalg.lstsq(selected_columns, compressed_signal, rcond=None)
 
             # Обновление остатка
             r = compressed_signal - np.dot(selected_columns, s_selected)
